@@ -1,0 +1,51 @@
+import pandas as  pd
+import re
+
+data=pd.read_csv("data.csv")
+
+data.columns = data.columns.str.strip()
+data["job_title"] = data["job_title"].str.strip()
+data["company"] = data["company"].str.strip()
+data["platform"] = data["platform"].str.strip()
+data["location"] = data["location"].str.strip()
+data["employment_type"] = data["employment_type"].str.strip()
+data["skills_required"] = data["skills_required"].str.strip()
+
+data["employment_type"] = data["employment_type"].str.lower()
+
+def extract_experience(value):
+
+    if pd.isna(value):
+        return None, None
+
+    value = str(value).strip()
+
+    match = re.match(
+        r'^(\d+)\s*-\s*(\d+)\s*(?:yr|yrs|year|years)$',
+        value,
+        re.IGNORECASE
+    )
+
+    if match:
+        minimum = int(match.group(1))
+        maximum = int(match.group(2))
+        return minimum, maximum
+
+    return None, None
+
+data[["experience_min", "experience_max"]] = data["experience_level"].apply(
+    lambda x: pd.Series(extract_experience(x))
+)
+
+print(data[["experience_level", "experience_min", "experience_max"]].head(15))
+
+
+"""print(data["skills_required"].head(20))
+print(data["skills_required"].isna().sum())"""
+
+data["skills_required"]=data["skills_required"].str.strip().str.lower()
+"""print(data["skills_required"].head(10))"""
+
+data["skills_list"] = data["skills_required"].str.split(",")
+"""print(data[["skills_required", "skills_list"]].head(10))"""
+

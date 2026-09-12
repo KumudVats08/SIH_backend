@@ -11,7 +11,9 @@ from database import get_db
 from models import Employer
 
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "change-this-demo-secret")
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+if not SECRET_KEY or len(SECRET_KEY) < 32:
+    raise RuntimeError("JWT_SECRET_KEY must be set to a random value of at least 32 characters")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
